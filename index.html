@@ -1,0 +1,16 @@
+<html>
+<head>
+<title>dot_picture_processing.js sample</title>
+<script type="text/javascript" src="dot_picture_processing.js"></script>
+<script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<h2>dot_picture_processing.js sample</h2>
+<input type="file" id="selectfile" accept='image/*'>
+<br>
+<input type="range" id="dots_len_bar" min="0" max="0" step="1" value="0" oninput="changeValue(this.value)" onchange="excute_convert_to_dot(this.value)">
+<span id="val">0</span>
+<canvas id="resultcanvas">
+</canvas>
+</body>
+</html>
