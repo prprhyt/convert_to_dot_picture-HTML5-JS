@@ -1,8 +1,6 @@
 /*dot_picture_processing.js*/
 
-//任意のh*w長方形にx*xの正方形を隙間なく敷き詰めるときのxはhとw公約数
 var convert_to_dot = function (binaryData, dot_len, pict_height, pict_width) {
-	var pict_len = pict_height*pict_width;
 	for(var cursor_y=0;cursor_y<pict_height;cursor_y+=dot_len){
 		for(var cursor_x=0;cursor_x<pict_width;cursor_x+=dot_len){
 			var max_num_of_hue_group_num=0;
@@ -23,7 +21,13 @@ var convert_to_dot = function (binaryData, dot_len, pict_height, pict_width) {
 											: (270>temp_hue) ? 4
 											: 5;
 					hue_group[index_of_hue_index].push(temp_hue);
-					if(!temp_hue in rgb_param){
+					if(temp_hue<0){
+						console.log(hue_group[index_of_hue_index]);
+						get_hue_by_rgb(binaryData[idx],binaryData[idx+1],binaryData[idx+2]);
+					}
+					if(temp_hue in rgb_param){
+						
+					}else{
 						rgb_param[temp_hue] = new rgb_obj(binaryData[idx],binaryData[idx+1],binaryData[idx+2]);
 					}
 				}
@@ -36,19 +40,30 @@ var convert_to_dot = function (binaryData, dot_len, pict_height, pict_width) {
 				if( a > b ) return 1;
 				return 0;
 			});
-			dots_hue=hue_group[max_num_of_hue_group_num][hue_group[max_num_of_hue_group_num].length/2];
+			dots_hue=hue_group[max_num_of_hue_group_num][Math.floor(hue_group[max_num_of_hue_group_num].length/2)];
 			for(var px_y=cursor_y; px_y<cursor_y+dot_len; ++px_y){
 				for(var px_x=cursor_x; px_x<cursor_x+dot_len; ++px_x){
 					var idx=(px_x + px_y * pict_width) * 4;
-					binaryData[idx]=rgb_param[dots_hue].red;
-					binaryData[idx+1]=rgb_param[dots_hue].blue;
-					binaryData[idx+2]=rgb_param[dots_hue].green;
+					try{
+						binaryData[idx]=rgb_param[dots_hue].red;
+						binaryData[idx+1]=rgb_param[dots_hue].green;
+						binaryData[idx+2]=rgb_param[dots_hue].blue;
+					}catch(e){
+						console.log("error: "+Math.floor(hue_group[max_num_of_hue_group_num].length/2));
+						var a=dots_hue;
+					}
 				}
 			}
+			console.log(hue_group[max_num_of_hue_group_num]);
+			console.log(rgb_param[dots_hue]);
+			hue_group=[];
+			rgb_param=[];
 		}
 	}
 }
 
+
+//任意のh*w長方形にl*lの正方形を隙間なく敷き詰めるときのlはhとw公約数
 var get_square_len_list = function(pict_height,pict_width){
 	var len_longer = pict_height;
 	var len_shorter = pict_width;
@@ -65,33 +80,33 @@ var get_square_len_list = function(pict_height,pict_width){
 	return [].concat(list_of_square_len);
 }
 
-function rgb_obj(red_num, blue_num,green_num){
+function rgb_obj(red_num,green_num,blue_num){
 	this.red=red_num;
-	this.blue=blue_num;
 	this.green=green_num;
+	this.blue=blue_num;
 }
 
-function get_hue_by_rgb(red_num, blue_num, green_num){
+function get_hue_by_rgb(red_num,green_num,blue_num){
 	var max_num=red_num;
 	var min_num=red_num;
 	var num_of_plus=0;
-	var num_of_molecule=blue_num-green_num;
+	var num_of_molecule=green_num-blue_num;
 	var num_of_hue;
 	if(blue_num>max_num){
 		max_num=blue_num;
-		num_of_molecule=red_num-blue_num;
+		num_of_molecule=blue_num-red_num;
 		num_of_plus = 2;
 	}
 	if(green_num>max_num){
 		max_num=green_num;
-		num_of_molecule=green_num-red_num;
+		num_of_molecule=red_num-green_num;
 		num_of_plus=4;
 	}
 
 	min_num=(min_num>blue_num) ? blue_num : min_num;
 	min_num=(min_num>green_num) ? green_num : min_num;
 
-	num_of_hue=(max_num==min_num) ? 0 : 60*(num_of_plus+num_of_molecule/max_num-min_num);
+	num_of_hue=Math.floor((max_num==min_num) ? 0 : 60*(num_of_plus+num_of_molecule/(max_num-min_num)));
 
 	return (num_of_hue<0) ? num_of_hue+360 : num_of_hue;
 }
