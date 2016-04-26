@@ -32,7 +32,9 @@ window.addEventListener("DOMContentLoaded", function(){
 
 
 function changeValue(value) {
-    document.getElementById("val").innerHTML = dots_len_list[value];
+    var value_box = document.getElementById("val");//.innerHTML = dots_len_list[value];
+    value_box.innerText = "width*height(dots): "+imgwidth/dots_len_list[value]+"*"+imgheight/dots_len_list[value]+"(dot len(px): "+dots_len_list[value]+"*"+dots_len_list[value]+")";
+	value_box.textContent = "width*height(dots): "+imgwidth/dots_len_list[value]+"*"+imgheight/dots_len_list[value]+"(dot len(px): "+dots_len_list[value]+"*"+dots_len_list[value]+")";
 }
 
 function excute_convert_to_dot(value){
